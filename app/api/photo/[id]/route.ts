@@ -1,0 +1,2 @@
+import {bucket,json,safe,user,fail} from '../../../../lib/server';
+export async function GET(req:Request,{params}:{params:Promise<{id:string}>}){return safe(async()=>{await user(req);const {id}=await params;if(!/^[a-f0-9-]{36}$/.test(id))fail('notFound',404);const obj=await bucket().get(id);if(!obj)return json({error:'notFound'},404);return new Response(obj.body,{headers:{'Content-Type':obj.httpMetadata?.contentType||'image/jpeg','Cache-Control':'private, max-age=3600','X-Content-Type-Options':'nosniff'}})})}

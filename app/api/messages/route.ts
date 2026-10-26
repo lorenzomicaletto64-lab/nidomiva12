@@ -1,0 +1,2 @@
+import {db,json,fail,safe,origin,user,rate,text,participant} from '../../../lib/server';
+export async function POST(req:Request){return safe(async()=>{origin(req);const u=await user(req);await rate('msg:'+u.id,100,3600000);const b:any=await req.json(),i=await participant(text(b.id,50),u.id);if(i.status!=='accepted')fail('forbidden',403);await db().prepare('INSERT INTO messages(id,interest_id,sender_id,body,created) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),i.id,u.id,text(b.body,2000),Date.now()).run();return json({ok:true})})}
